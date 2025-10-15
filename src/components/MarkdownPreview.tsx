@@ -86,7 +86,7 @@ const MarkdownPreview = ({ content }: MarkdownPreviewProps) => {
           if (restOfLine.endsWith('``')) {
             codeContent = restOfLine.substring(0, restOfLine.length - 2);
             elements.push(
-              <div key={i} className="my-3 sm:my-4 rounded-lg overflow-hidden bg-code-bg border border-border">
+              <div key={i} className="my-3 sm:my-4 rounded-lg overflow-hidden bg-code-bg border border-border max-w-full">
                 <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-muted border-b border-border">
                   <span className="text-xs font-mono text-primary">{language}</span>
                   <Button
@@ -102,9 +102,11 @@ const MarkdownPreview = ({ content }: MarkdownPreviewProps) => {
                     )}
                   </Button>
                 </div>
-                <pre className="p-3 sm:p-4 overflow-x-auto">
-                  <code className="text-xs sm:text-sm font-mono text-foreground break-all sm:break-normal">{codeContent}</code>
-                </pre>
+                <div className="overflow-x-auto max-h-96 overflow-y-auto">
+                  <pre className="p-3 sm:p-4">
+                    <code className="text-xs sm:text-sm font-mono text-foreground whitespace-pre">{codeContent}</code>
+                  </pre>
+                </div>
               </div>
             );
           } else {
@@ -119,7 +121,7 @@ const MarkdownPreview = ({ content }: MarkdownPreviewProps) => {
             }
             
             elements.push(
-              <div key={i} className="my-3 sm:my-4 rounded-lg overflow-hidden bg-code-bg border border-border">
+              <div key={i} className="my-3 sm:my-4 rounded-lg overflow-hidden bg-code-bg border border-border max-w-full">
                 <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-muted border-b border-border">
                   <span className="text-xs font-mono text-primary">{language}</span>
                   <Button
@@ -135,9 +137,11 @@ const MarkdownPreview = ({ content }: MarkdownPreviewProps) => {
                     )}
                   </Button>
                 </div>
-                <pre className="p-3 sm:p-4 overflow-x-auto">
-                  <code className="text-xs sm:text-sm font-mono text-foreground break-all sm:break-normal">{codeContent.trim()}</code>
-                </pre>
+                <div className="overflow-x-auto max-h-96 overflow-y-auto">
+                  <pre className="p-3 sm:p-4">
+                    <code className="text-xs sm:text-sm font-mono text-foreground whitespace-pre">{codeContent.trim()}</code>
+                  </pre>
+                </div>
               </div>
             );
           }
@@ -151,26 +155,20 @@ const MarkdownPreview = ({ content }: MarkdownPreviewProps) => {
           if (idx % 2 === 1) {
             const codeId = `inline-${i}-${idx}`;
             return (
-              <span key={idx} className="inline-flex items-center gap-1 sm:gap-2 mx-0.5 sm:mx-1 px-2 sm:px-3 py-1 bg-code-bg border border-border rounded font-mono text-xs sm:text-sm break-all">
-                <code className="text-primary">{part}</code>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => copyToClipboard(part, codeId)}
-                  className="h-4 w-4 p-0 shrink-0"
-                >
-                  {copiedCode === codeId ? (
-                    <Check className="w-3 h-3 text-primary" />
-                  ) : (
-                    <Copy className="w-3 h-3" />
-                  )}
-                </Button>
+              <span
+                key={idx}
+                onClick={() => {
+                  copyToClipboard(part, codeId);
+                }}
+                className="inline-flex items-center gap-1 sm:gap-2 mx-0.5 sm:mx-1 px-2 sm:px-3 py-1 bg-code-bg border border-border rounded font-mono text-xs sm:text-sm break-all cursor-pointer hover:bg-primary/20 transition-colors"
+              >
+                <code className="text-primary break-words max-w-full overflow-hidden">{part}</code>
               </span>
             );
           }
           return <span key={idx}>{parseInlineFormatting(part)}</span>;
         });
-        
+
         elements.push(
           <p key={i} className="mb-3 sm:mb-4 text-sm sm:text-base text-foreground leading-relaxed break-words">
             {processedParts}

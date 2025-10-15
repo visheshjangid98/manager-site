@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,12 +6,19 @@ import { Card } from "@/components/ui/card";
 import { Shield, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import AdminPanel from "@/components/AdminPanel";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
+import { getAnnouncement, type Announcement } from "@/lib/mongodb";
 
 const Admin = () => {
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    getAnnouncement().then(setAnnouncement).catch(console.error);
+  }, []);
 
   const handleLogin = () => {
     if (password === "itsmanagerplugin") {
@@ -35,8 +42,16 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {announcement && announcement.enabled && (
+        <AnnouncementBanner
+          id={announcement.id}
+          text={announcement.text}
+          icon={announcement.icon}
+          backgroundColor={announcement.backgroundColor}
+        />
+      )}
       {/* Navigation */}
-      <nav className="border-b border-border backdrop-blur-sm bg-background/80">
+      <nav className="border-b border-border backdrop-blur-sm bg-background/80" style={{ marginTop: announcement && announcement.enabled ? '52px' : '0' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center gap-2">

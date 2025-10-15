@@ -1,15 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import WikiSidebar from "@/components/WikiSidebar";
 import WikiContent from "@/components/WikiContent";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { Shield, Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { getAnnouncement, type Announcement } from "@/lib/mongodb";
 
 const Wiki = () => {
   const [selectedPage, setSelectedPage] = useState("getting-started");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(false);
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null);
+
+  useEffect(() => {
+    getAnnouncement().then(setAnnouncement).catch(console.error);
+  }, []);
 
   const handlePageSelect = (pageId: string) => {
     setSelectedPage(pageId);
@@ -18,8 +25,16 @@ const Wiki = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {announcement && announcement.enabled && (
+        <AnnouncementBanner
+          id={announcement.id}
+          text={announcement.text}
+          icon={announcement.icon}
+          backgroundColor={announcement.backgroundColor}
+        />
+      )}
       {/* Navigation */}
-      <nav className="border-b border-border backdrop-blur-sm bg-background/80 sticky top-0 z-50">
+      <nav className="border-b border-border backdrop-blur-sm bg-background/80 sticky top-0 z-40" style={{ marginTop: announcement && announcement.enabled ? '52px' : '0' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
